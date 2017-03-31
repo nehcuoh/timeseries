@@ -29,6 +29,14 @@ type Point struct {
 	timestamp int64
 }
 
+type FaceKey interface {
+	Key() interface{}
+}
+
+type Face struct {
+	m map[interface{}]TimeLine
+}
+
 const (
 	EdenTime = 1490345760
 	Second   = 1
@@ -106,4 +114,40 @@ func (s *Series) String() string {
 		ret = ret + fmt.Sprintf("timestamp: %d, value: %d\n", p.TimeStamp(), p.Value())
 	}
 	return ret
+}
+
+func NewFace() (*Face) {
+	return &Face{m: make(map[interface{}]TimeLine)}
+}
+
+func (f*Face) Register(key FaceKey, line TimeLine) {
+	f.m[key.Key()] = line
+}
+
+func (f*Face) Get(key FaceKey) (t TimeLine, ok bool) {
+	e, ok := f.m[key.Key()]
+	if !ok {
+		return nil, false
+	}
+	return e, true
+}
+
+func (f*Face) Remove(key FaceKey) {
+	delete(f.m, key.Key())
+}
+
+func (f*Face) AppendTo(key FaceKey, point IPoint, resolution int32) {
+	tl, ok := f.Get(key)
+	if !ok {
+		line := NewSeries(resolution)
+		f.Register(key, *line)
+		tl = *line
+	}
+	tl.Append(point)
+}
+
+func (f*Face) Dump() {
+	for i, l := range f.m {
+		fmt.Printf("Face[%s] =\n%s\n", i, l)
+	}
 }

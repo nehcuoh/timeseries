@@ -1,0 +1,15 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "x4LYptvJw5UJIuUHVCbMI9/bsfQ=",
+			"path": "github.com/emirpasic/gods",
+			"revision": "f6c17b524822278a87e3b3bd809fec33b51f5b46",
+			"revisionTime": "2017-03-06T04:24:02Z",
+			"version": "v1.9.0",
+			"versionExact": "v1.9.0"
+		}
+	],
+	"rootPath": "timeseries"
+}

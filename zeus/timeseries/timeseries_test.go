@@ -27,3 +27,4 @@ func TestNewMinutePoint(t *testing.T) {
 		t.Errorf("nMinutes mismatch,now= %d, nMinutes=%d\n", now, point.TimeStamp())
 	}
 }
+

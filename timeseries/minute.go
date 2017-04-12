@@ -51,7 +51,7 @@ func NewMinuteSeries() (*MinuteSeries) {
 	return &MinuteSeries{Series: s}
 }
 
-func (m*MinuteSeries) Append(point IPoint) (event Event) {
+func (m*MinuteSeries) Append(point IPoint) (event EventType) {
 	if m.Series == nil {
 		m.Series = make([]IPoint, 1)
 	}

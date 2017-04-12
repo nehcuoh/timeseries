@@ -74,7 +74,7 @@ func NewSeries(resolution TimeInterval) (*TimeLine) {
 	return ret
 }
 
-func (s *Series) Append(point IPoint) (e Event) {
+func (s *Series) Append(point IPoint) (e EventType) {
 
 	old_size := len(*s)
 	if old_size < 1 {

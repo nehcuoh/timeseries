@@ -7,8 +7,14 @@ const (
 	EVENT_TIMELINE_POINT_NEW  = 0x08
 )
 
-type Event uint16
+type EventType uint16
+
+type Event struct {
+	Type  EventType
+	key   *FaceKey
+	point *IPoint
+}
 
 type Notifier interface {
-	Send(key *FaceKey, point IPoint, event Event) (ok bool, err Error)
+	Send(e *Event) ( err Error)
 }

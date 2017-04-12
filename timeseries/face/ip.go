@@ -20,7 +20,7 @@ func (*IP) ParseKey(key interface{}) (ip_obj series.FaceKey, err error) {
 
 	if e {
 		info := fmt.Sprintf("Parse IP Fail,key: %d", key)
-		return nil, &Error{info}
+		return nil, NewError()
 	}
 	ip := uint32(k)
 	bytesIP := &IP{make([]byte, 4)}

@@ -1,6 +1,9 @@
 package timeseries
 
-import "fmt"
+import (
+	"fmt"
+	facePkg "zeus/timeseries/face"
+)
 
 type FaceKey interface {
 	Key() interface{}
@@ -9,8 +12,9 @@ type FaceKey interface {
 
 type Face struct {
 	*FaceConfig
-	m    map[interface{}]TimeLine
-	name string
+	m            map[interface{}]TimeLine
+	name         string
+	notification chan *Event
 }
 
 type FaceConfig struct {
@@ -40,11 +44,11 @@ func (f*Face) Get(key FaceKey) (t TimeLine, err *Error) {
 
 func (f*Face) Remove(key FaceKey) {
 	delete(f.m, key.Key())
-	f.sendNotification(&key, nil, EVENT_FACEKEY_DEL)
+	f.notification <- &Event{key: &key, point: nil, Type: EVENT_FACEKEY_DEL}
 }
 
 func (f*Face) Append(key FaceKey, point IPoint) {
-	event := Event(0)
+	event := EventType(0)
 	tl, _ := f.Get(key)
 	if tl == nil {
 		line := NewSeries(f.Resolution)
@@ -54,7 +58,7 @@ func (f*Face) Append(key FaceKey, point IPoint) {
 	}
 	appendEvent := tl.Append(point)
 	event |= appendEvent
-	f.sendNotification(&key, point, event)
+	f.notification <- &Event{key: &key, point: &point, Type: event}
 }
 
 func (f*FaceConfig) AddNotifier(n Notifier) {
@@ -62,16 +66,24 @@ func (f*FaceConfig) AddNotifier(n Notifier) {
 }
 
 func (f*FaceConfig) RemoveNotifier() {
+
 }
 
-func (f*Face) sendNotification(key *FaceKey, point IPoint, event Event) (ok bool) {
-	if f.observer == nil {
-		return false
+//read from f.notification and call observer
+func (f*Face) initWatcher() {
+	watcher := func(face *Face) {
+		for ; ; {
+			e := <-face.notification
+			if e == nil {
+				err := facePkg.NewFatalError(1, "s")
+				panic(err)
+			}
+			for _, observer := range (*face).observer {
+				observer.Send(e)
+			}
+		}
 	}
-	for _, receiver := range f.observer {
-		ok, _ = receiver.Send(key, point, event)
-	}
-	return
+	go watcher(f)
 }
 
 func (f*Face) Dump(keyType FaceKey) {

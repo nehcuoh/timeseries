@@ -9,7 +9,9 @@ var(
 )
 
 func test() {
-	//client.Get()
+}
+func init() {
+
 }
 
 
